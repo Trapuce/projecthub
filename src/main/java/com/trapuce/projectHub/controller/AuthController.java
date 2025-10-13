@@ -8,6 +8,7 @@ import com.trapuce.projectHub.dto.response.AuthResponse;
 import com.trapuce.projectHub.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,9 +34,11 @@ public class AuthController {
     
     @PostMapping("/login")
     @Operation(summary = "Login user", description = "Authenticate user and return JWT tokens")
-    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request, 
+                                                          HttpServletRequest httpRequest) {
         log.info("Login request received for email: {}", request.getEmail());
-        AuthResponse response = authService.login(request);
+        String clientIP = getClientIP(httpRequest);
+        AuthResponse response = authService.login(request, clientIP);
         return ResponseEntity.ok(ApiResponse.success("Login successful", response));
     }
     
@@ -52,6 +55,20 @@ public class AuthController {
     public ResponseEntity<ApiResponse<String>> logout() {
         log.info("Logout request received");
         return ResponseEntity.ok(ApiResponse.success("Logout successful", "Tokens should be discarded on client side"));
+    }
+    
+    private String getClientIP(HttpServletRequest request) {
+        String xForwardedFor = request.getHeader("X-Forwarded-For");
+        if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
+            return xForwardedFor.split(",")[0].trim();
+        }
+        
+        String xRealIP = request.getHeader("X-Real-IP");
+        if (xRealIP != null && !xRealIP.isEmpty()) {
+            return xRealIP;
+        }
+        
+        return request.getRemoteAddr();
     }
 }
 
