@@ -14,8 +14,8 @@ import java.io.IOException;
  * Filtre de sécurité global pour ajouter des en-têtes de sécurité
  */
 @Slf4j
-@Component
-@Order(Ordered.HIGHEST_PRECEDENCE)
+// @Component
+// @Order(Ordered.HIGHEST_PRECEDENCE)
 public class SecurityHeadersFilter implements Filter {
 
     @Override

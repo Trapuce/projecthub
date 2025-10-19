@@ -12,7 +12,7 @@ import com.trapuce.projectHub.exception.ResourceAlreadyExistsException;
 import com.trapuce.projectHub.exception.ResourceNotFoundException;
 import com.trapuce.projectHub.repository.UserRepository;
 import com.trapuce.projectHub.security.JwtUtil;
-import com.trapuce.projectHub.security.SecurityMonitoringService;
+// import com.trapuce.projectHub.security.SecurityMonitoringService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,7 +37,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
-    private final SecurityMonitoringService securityMonitoringService;
+    // private final SecurityMonitoringService securityMonitoringService;
     
     public AuthResponse register(RegisterRequest request) {
         log.info("Registering new user with email: {}", request.getEmail());
@@ -75,18 +75,18 @@ public class AuthService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
             
             if (user.getStatus() != UserStatus.ACTIVE) {
-                securityMonitoringService.recordFailedLogin(request.getEmail(), clientIP);
+                // securityMonitoringService.recordFailedLogin(request.getEmail(), clientIP);
                 throw new BadCredentialsException("Account is not active");
             }
             
             // Enregistrer la connexion réussie
-            securityMonitoringService.recordSuccessfulLogin(request.getEmail(), clientIP);
+            // securityMonitoringService.recordSuccessfulLogin(request.getEmail(), clientIP);
             log.info("User logged in successfully: {}", user.getEmail());
             return generateAuthResponse(user);
             
         } catch (Exception e) {
             // Enregistrer la tentative de connexion échouée
-            securityMonitoringService.recordFailedLogin(request.getEmail(), clientIP);
+            // securityMonitoringService.recordFailedLogin(request.getEmail(), clientIP);
             log.error("Login failed for email: {} from IP: {}", request.getEmail(), clientIP);
             throw new BadCredentialsException("Invalid email or password");
         }

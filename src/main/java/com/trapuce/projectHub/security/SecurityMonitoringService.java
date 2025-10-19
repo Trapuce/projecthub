@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Service de monitoring de sécurité pour détecter les activités suspectes
  */
 @Slf4j
-@Service
+// @Service
 public class SecurityMonitoringService {
 
     // Cache pour les tentatives de connexion échouées

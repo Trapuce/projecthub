@@ -74,6 +74,16 @@ public class JwtUtil {
     
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
+        // Add roles to claims
+        log.info("Generating token for user: {}", userDetails.getUsername());
+        log.info("User authorities: {}", userDetails.getAuthorities());
+        
+        String[] roles = userDetails.getAuthorities().stream()
+                .map(authority -> authority.getAuthority().replace("ROLE_", ""))
+                .toArray(String[]::new);
+        
+        log.info("Extracted roles: {}", java.util.Arrays.toString(roles));
+        claims.put("roles", roles);
         return createToken(claims, userDetails.getUsername(), expiration);
     }
     

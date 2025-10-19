@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * Contrôleur pour le monitoring de sécurité (réservé aux administrateurs)
  */
-@RestController
+// @RestController
 @RequestMapping("/api/security")
 @RequiredArgsConstructor
 @Slf4j

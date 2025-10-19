@@ -19,8 +19,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Filtre de rate limiting basé sur l'IP et l'endpoint
  */
 @Slf4j
-@Component
-@Order(Ordered.HIGHEST_PRECEDENCE + 1)
+// @Component
+// @Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class RateLimitingFilter implements Filter {
 
     // Cache pour stocker les compteurs de requêtes par IP

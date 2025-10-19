@@ -2,6 +2,8 @@ package com.trapuce.projectHub.config;
 
 import com.trapuce.projectHub.security.JwtAuthenticationFilter;
 import com.trapuce.projectHub.security.UserDetailsServiceImpl;
+// import com.trapuce.projectHub.security.SecurityHeadersFilter;
+// import com.trapuce.projectHub.security.RateLimitingFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +35,8 @@ public class SecurityConfig {
     
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    // private final SecurityHeadersFilter securityHeadersFilter;
+    // private final RateLimitingFilter rateLimitingFilter;
     
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -43,7 +47,8 @@ public class SecurityConfig {
                 // Public endpoints
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-                .requestMatchers("/actuator/health").permitAll()
+                .requestMatchers("/actuator/**").permitAll()
+                .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/error").permitAll()
                 // Admin only endpoints
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
@@ -54,6 +59,8 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+            // .addFilterBefore(rateLimitingFilter, JwtAuthenticationFilter.class)
+            // .addFilterBefore(securityHeadersFilter, RateLimitingFilter.class);
         
         return http.build();
     }

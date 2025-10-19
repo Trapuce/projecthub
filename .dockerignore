@@ -1,53 +1,62 @@
-# Fichiers et dossiers à ignorer lors de la construction de l'image Docker
+# Fichiers et dossiers à ignorer lors de la construction Docker
 
-# Dossiers de build
+# Fichiers de développement
+.git
+.gitignore
+README.md
+HELP.md
+*.md
+
+# Fichiers de configuration de développement
+.env
+.env.local
+.env.development
+.env.test
+
+# Dossiers de build (mais garder le JAR)
 target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+!target/*.jar
+.mvn/
+mvnw
+mvnw.cmd
 
 # Fichiers IDE
 .idea/
-*.iws
+.vscode/
 *.iml
 *.ipr
-.vscode/
-.settings/
-.project
-.classpath
+*.iws
 
 # Fichiers système
 .DS_Store
 Thumbs.db
 
-# Fichiers de logs
-*.log
+# Logs
 logs/
+*.log
 
 # Fichiers temporaires
+tmp/
+temp/
 *.tmp
 *.temp
 
-# Fichiers de configuration locale
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Fichiers de test
+src/test/
 
-# Dossier uploads (sera créé dans le conteneur)
+# Scripts de déploiement
+deploy*.sh
+*.sh
+
+# Fichiers de configuration de production
+application-prod.properties
+env.prod.example
+
+# Certificats SSL (sécurité)
+docker/nginx/ssl/
+*.pem
+*.key
+*.crt
+
+# Uploads (seront montés comme volume)
 uploads/
-
-# Fichiers Git
-.git/
-.gitignore
-
-# Documentation
-README.md
-HELP.md
-*.md
-
-# Docker files
-Dockerfile
-docker-compose.yml
-.dockerignore

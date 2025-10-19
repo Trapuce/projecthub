@@ -1,0 +1,89 @@
+version: '3.9'
+
+services:
+  # Base de données PostgreSQL
+  db:
+    image: postgres:15-alpine
+    container_name: projecthub_db_prod
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: projecthub
+      POSTGRES_USER: projecthub_user
+      POSTGRES_PASSWORD: projecthub_secure_password_2024
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - projecthub_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U projecthub_user -d projecthub"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # Application Spring Boot
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: projecthub_app_prod
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/projecthub
+      SPRING_DATASOURCE_USERNAME: projecthub_user
+      SPRING_DATASOURCE_PASSWORD: projecthub_secure_password_2024
+      JWT_SECRET: qbQVyZOIQFtAYk5jIY5AXvLI2yi0UjewIkwXrBqQe8/3JYHrCUNSrife7OoN7dDlDOnppOojzNVYkRhMPtX6Vw==
+      JWT_EXPIRATION: 86400000
+      JWT_REFRESH_EXPIRATION: 604800000
+      SERVER_PORT: 8080
+      TZ: Europe/Paris
+    volumes:
+      - uploads_data:/app/uploads
+      - logs_data:/app/logs
+    ports:
+      - "8082:8082"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - projecthub_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # pgAdmin pour la gestion de la base de données
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: projecthub_pgadmin_prod
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@projecthub.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    networks:
+      - projecthub_network
+
+volumes:
+  postgres_data:
+    driver: local
+  uploads_data:
+    driver: local
+  logs_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+networks:
+  projecthub_network:
+    driver: bridge
