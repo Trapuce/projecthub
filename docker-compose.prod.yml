@@ -52,24 +52,24 @@ services:
     labels:
       # Activer Traefik pour ce service
       - "traefik.enable=true"
-      
+      - "traefik.docker.network=web"
       # Service principal (API)
       - "traefik.http.services.projecthub.loadbalancer.server.port=8080"
-      
+
       # Route principale HTTPS - Gère toutes les routes du domaine
       - "traefik.http.routers.projecthub.rule=Host(`projectHub.trapuce.tech`)"
       - "traefik.http.routers.projecthub.entrypoints=websecure"
       - "traefik.http.routers.projecthub.tls=true"
       - "traefik.http.routers.projecthub.tls.certresolver=myresolver"
       - "traefik.http.routers.projecthub.service=projecthub"
-      
+
       # Redirection HTTP vers HTTPS
       - "traefik.http.routers.projecthub-http.rule=Host(`projectHub.trapuce.tech`)"
       - "traefik.http.routers.projecthub-http.entrypoints=web"
       - "traefik.http.routers.projecthub-http.middlewares=redirect-to-https"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
-      
+
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 30s
