@@ -53,20 +53,43 @@ services:
       # Activer Traefik pour ce service
       - "traefik.enable=true"
       - "traefik.docker.network=web"
+      
       # Service principal (API)
       - "traefik.http.services.projecthub.loadbalancer.server.port=8080"
 
-      # Route principale HTTPS - Gère toutes les routes du domaine
-      - "traefik.http.routers.projecthub.rule=Host(`projectHub.trapuce.tech`)"
-      - "traefik.http.routers.projecthub.entrypoints=websecure"
-      - "traefik.http.routers.projecthub.tls=true"
-      - "traefik.http.routers.projecthub.tls.certresolver=myresolver"
-      - "traefik.http.routers.projecthub.service=projecthub"
+      # Route pour /api/* - API Backend
+      - "traefik.http.routers.projecthub-api.rule=Host(`projecthub.trapuce.tech`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.projecthub-api.entrypoints=websecure"
+      - "traefik.http.routers.projecthub-api.tls=true"
+      - "traefik.http.routers.projecthub-api.tls.certresolver=myresolver"
+      - "traefik.http.routers.projecthub-api.service=projecthub"
+      - "traefik.http.routers.projecthub-api.priority=10"
 
-      # Redirection HTTP vers HTTPS
-      - "traefik.http.routers.projecthub-http.rule=Host(`projectHub.trapuce.tech`)"
-      - "traefik.http.routers.projecthub-http.entrypoints=web"
-      - "traefik.http.routers.projecthub-http.middlewares=redirect-to-https"
+      # Route pour /swagger-ui/* et /v3/api-docs/* - Documentation Swagger
+      - "traefik.http.routers.projecthub-swagger.rule=Host(`projecthub.trapuce.tech`) && (PathPrefix(`/swagger-ui`) || PathPrefix(`/v3/api-docs`) || PathPrefix(`/swagger-ui.html`))"
+      - "traefik.http.routers.projecthub-swagger.entrypoints=websecure"
+      - "traefik.http.routers.projecthub-swagger.tls=true"
+      - "traefik.http.routers.projecthub-swagger.tls.certresolver=myresolver"
+      - "traefik.http.routers.projecthub-swagger.service=projecthub"
+      - "traefik.http.routers.projecthub-swagger.priority=10"
+
+      # Route pour /actuator/* - Health checks et monitoring
+      - "traefik.http.routers.projecthub-actuator.rule=Host(`projecthub.trapuce.tech`) && PathPrefix(`/actuator`)"
+      - "traefik.http.routers.projecthub-actuator.entrypoints=websecure"
+      - "traefik.http.routers.projecthub-actuator.tls=true"
+      - "traefik.http.routers.projecthub-actuator.tls.certresolver=myresolver"
+      - "traefik.http.routers.projecthub-actuator.service=projecthub"
+      - "traefik.http.routers.projecthub-actuator.priority=10"
+
+      # Redirection HTTP vers HTTPS pour les routes API
+      - "traefik.http.routers.projecthub-api-http.rule=Host(`projecthub.trapuce.tech`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.projecthub-api-http.entrypoints=web"
+      - "traefik.http.routers.projecthub-api-http.middlewares=redirect-to-https"
+      - "traefik.http.routers.projecthub-swagger-http.rule=Host(`projecthub.trapuce.tech`) && (PathPrefix(`/swagger-ui`) || PathPrefix(`/v3/api-docs`))"
+      - "traefik.http.routers.projecthub-swagger-http.entrypoints=web"
+      - "traefik.http.routers.projecthub-swagger-http.middlewares=redirect-to-https"
+      
+      # Middleware de redirection
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
 

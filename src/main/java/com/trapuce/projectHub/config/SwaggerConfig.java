@@ -20,7 +20,7 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
             .servers(List.of(
-                new Server().url("https://projectHub.trapuce.tech").description("Production Server"),
+                new Server().url("https://projecthub.trapuce.tech/api").description("Production Server"),
                 new Server().url("http://localhost:8080").description("Local Development Server")
             ))
             .info(new Info()
